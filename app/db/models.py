@@ -1,12 +1,13 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String
+from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.sql import func
+from app.db.base import Base
 
-class Base(DeclarativeBase):
-    pass
+class AnalyticsQuery(Base):
+    __tablename__ = "analytics_queries"
 
-class QueryLog(Base):
-    __tablename__ = "query_logs"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    query: Mapped[str] = mapped_column(String)
-    result: Mapped[str] = mapped_column(String)
+    id = Column(Integer, primary_key=True, index=True)
+    query = Column(Text, nullable=False)
+    result = Column(Text, nullable=False)
+    asset = Column(String(20), nullable=False)
+    mode = Column(String(20), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

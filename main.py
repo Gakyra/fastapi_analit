@@ -1,14 +1,20 @@
 from fastapi import FastAPI
-from app.core.startup import setup_logging, setup_exception_handlers, templates
+from app.core.startup import setup_logging, setup_exception_handlers
+from app.api.main import router as main_router
 from app.api.analytics import router as analytics_router
+from app.api.auth import router as auth_router
+from app.api.history import router as history_router
+from app.api.assets import router as assets_router
 
-app = FastAPI(title="FastAPI Analit")
+app = FastAPI(title="Інвест‑Аналітик")
 
+# 🔧 Инициализация
 setup_logging(app)
 setup_exception_handlers(app)
 
+# 🔗 Подключение роутов
+app.include_router(main_router)
 app.include_router(analytics_router, prefix="/analytics")
-
-@app.get("/")
-async def root():
-    return {"message": "FastAPI Analit is running"}
+app.include_router(auth_router, prefix="/auth")
+app.include_router(history_router, prefix="/analytics")
+app.include_router(assets_router)  # 👈 подключили роутер активов
