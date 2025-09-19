@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ asset_name }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h2 class="text-center mb-4">{{ asset_name }}</h2>
+
+    <div class="text-center mb-3">
+        <button class="btn btn-outline-primary" onclick="addToWatchlist('{{ asset_id }}')">❤️ Додати в обране</button>
+    </div>
+
+    <canvas id="chart7d" height="100"></canvas>
+    <h5 class="mt-4">📈 Ціна за 30 днів</h5>
+    <canvas id="chart30d" height="100"></canvas>
+</div>
+
+<script>
+    function addToWatchlist(id) {
+        fetch(`/watchlist/add/${id}`).then(() => alert("Додано в обране"));
+    }
+
+    function renderChart(canvasId, data) {
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        const labels = data.map(p => new Date(p.timestamp).toLocaleDateString());
+        const prices = data.map(p => p.price);
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Ціна (USD)",
+                    data: prices,
+                    borderColor: "blue",
+                    fill: false
+                }]
+            }
+        });
+    }
+
+    renderChart("chart7d", {{ chart_7d | tojson }});
+    renderChart("chart30d", {{ chart_30d | tojson }});
+</script>
+</body>
+</html>

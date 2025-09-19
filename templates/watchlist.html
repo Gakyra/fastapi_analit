@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Обране</title>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h2 class="text-center mb-4">❤️ Ваші обрані активи</h2>
+    <ul class="list-group">
+        {% for asset in assets %}
+        <li class="list-group-item">
+            <a href="/assets/{{ asset.id }}">{{ asset.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
