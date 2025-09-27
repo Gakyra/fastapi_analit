@@ -47,7 +47,11 @@
             <tbody>
                 {% for asset in assets %}
                 <tr class="asset-row" data-type="{{ asset.type }}">
-                    <td>{{ asset.name }}</td>
+                    <td>
+                        <a href="/assets/{{ asset.id }}" class="text-decoration-none">
+                            {{ asset.name }}
+                        </a>
+                    </td>
                     <td>${{ "%.6f"|format(asset.price) if asset.price < 1 else "%.2f"|format(asset.price) }}</td>
                     <td class="{{ 'price-up' if asset.change >= 0 else 'price-down' }}">
                         {% if asset.change >= 0 %}

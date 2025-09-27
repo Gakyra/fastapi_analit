@@ -1,41 +1,27 @@
 from fastapi import APIRouter, Request, Form
 from app.core.startup import templates
-from app.llm.processor import LLMProcessor
-from app.services.analytics import save_query
-from loguru import logger
+from app.services.assets import ASSETS, fetch_asset_data, get_type
+from app.services.chart_data import get_chart_data
 
 router = APIRouter()
-llm = LLMProcessor()
 
 @router.get("/view")
-async def analytics_view(request: Request):
-    return templates.TemplateResponse("analytics.html", {
+async def analytics_form(request: Request):
+    return templates.TemplateResponse("analytics_form.html", {
         "request": request,
-        "result": None,
-        "error": None
+        "assets": ASSETS
     })
 
 @router.post("/view")
-async def analytics_post(
-    request: Request,
-    query: str = Form(...),
-    asset: str = Form(...),
-    mode: str = Form(...)
-):
-    logger.info(f"Запит: {query} | Актив: {asset} | Тип: {mode}")
+async def analytics_result(request: Request, asset_id: str = Form(...)):
+    asset_data = await fetch_asset_data()
+    selected = next((a for a in asset_data if a["id"] == asset_id), None)
+    chart_30d = await get_chart_data(asset_id, days=30)
 
-    try:
-        result = await llm.analyze(query=query, asset=asset, mode=mode)
-        await save_query(query=query, result=result, asset=asset, mode=mode)
-        return templates.TemplateResponse("analytics.html", {
-            "request": request,
-            "result": result,
-            "error": None
-        })
-    except Exception as e:
-        logger.exception("Помилка при обробці запиту")
-        return templates.TemplateResponse("analytics.html", {
-            "request": request,
-            "result": None,
-            "error": "Виникла помилка при аналізі."
-        })
+    return templates.TemplateResponse("analytics_result.html", {
+        "request": request,
+        "asset": selected,
+        "chart_30d": chart_30d,
+        "asset_name": ASSETS.get(asset_id),
+        "asset_type": get_type(asset_id)
+    })

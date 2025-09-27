@@ -50,6 +50,7 @@ async def fetch_asset_data():
             asset = data.get(asset_id)
             if asset:
                 result.append({
+                    "id": asset_id,
                     "name": display_name,
                     "price": asset["usd"],
                     "change": round(asset.get("usd_24h_change", 0), 2),

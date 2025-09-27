@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Інвест‑Аналітик</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -23,9 +24,8 @@
                     <li class="nav-item"><a class="nav-link" href="/auth/register">Реєстрація</a></li>
                 {% endif %}
                 <li class="nav-item"><a class="nav-link" href="/analytics/view">Аналіз</a></li>
-                <li class="nav-item"><a class="nav-link" href="/analytics/history">Історія</a></li>
-                <li class="nav-item"><a class="nav-link" href="/academy">Навчання</a></li>
                 <li class="nav-item"><a class="nav-link" href="/assets">Активи</a></li>
+                <li class="nav-item"><a class="nav-link" href="/watchlist">Обране</a></li>
             </ul>
         </div>
     </div>
@@ -44,19 +44,23 @@
         <div class="col-md-4">
             <h3>📈 Ринковий аналіз</h3>
             <p>Оцінка активів, трендів і фінансових показників</p>
+            <a href="/assets" class="btn btn-outline-primary">Переглянути активи</a>
         </div>
         <div class="col-md-4">
             <h3>🧠 Психологія інвестора</h3>
             <p>Розбір поведінки, страхів і стратегій прийняття рішень</p>
+            <a href="/academy" class="btn btn-outline-success">Навчальні матеріали</a>
         </div>
         <div class="col-md-4">
             <h3>🔮 Прогнози</h3>
             <p>Моделі, сценарії та ймовірності розвитку подій</p>
+            <a href="/analytics/view" class="btn btn-outline-warning">Провести аналіз</a>
         </div>
     </div>
 </section>
 
 <footer class="bg-dark text-white text-center py-3">
+    <p class="mb-1">{{ tip }}</p>
     <p class="mb-0">© 2025 Інвест‑Аналітик. Всі права захищені.</p>
 </footer>
 

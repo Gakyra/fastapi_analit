@@ -3,46 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ asset_name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .chart-block {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 <div class="container py-5">
-    <h2 class="text-center mb-4">{{ asset_name }}</h2>
-
-    <div class="text-center mb-3">
-        <button class="btn btn-outline-primary" onclick="addToWatchlist('{{ asset_id }}')">❤️ Додати в обране</button>
+    <div class="text-center mb-4">
+        <h2 class="mb-3">{{ asset_name }}</h2>
+        <a href="/assets" class="btn btn-outline-secondary me-2">← Назад</a>
+        <a href="/watchlist/add/{{ asset_id }}" class="btn btn-outline-primary">❤️ Додати в обране</a>
     </div>
 
-    <canvas id="chart7d" height="100"></canvas>
-    <h5 class="mt-4">📈 Ціна за 30 днів</h5>
-    <canvas id="chart30d" height="100"></canvas>
+    <div class="chart-block">
+        <h5 class="chart-title">📈 Ціна за 7 днів</h5>
+        <canvas id="chart7d" height="100"></canvas>
+        <div id="fallback7d" class="text-muted text-center mt-2" style="display:none;">Немає даних для графіка</div>
+    </div>
+
+    <div class="chart-block">
+        <h5 class="chart-title">📊 Ціна за 30 днів</h5>
+        <canvas id="chart30d" height="100"></canvas>
+        <div id="fallback30d" class="text-muted text-center mt-2" style="display:none;">Немає даних для графіка</div>
+    </div>
 </div>
 
 <script>
-    function addToWatchlist(id) {
-        fetch(`/watchlist/add/${id}`).then(() => alert("Додано в обране"));
-    }
-
-    function renderChart(canvasId, data) {
-        const ctx = document.getElementById(canvasId).getContext("2d");
-        const labels = data.map(p => new Date(p.timestamp).toLocaleDateString());
-        const prices = data.map(p => p.price);
-        new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Ціна (USD)",
-                    data: prices,
-                    borderColor: "blue",
-                    fill: false
-                }]
+    document.addEventListener("DOMContentLoaded", function () {
+        function renderChart(canvasId, data, fallbackId) {
+            if (!data || data.length === 0) {
+                document.getElementById(fallbackId).style.display = "block";
+                return;
             }
-        });
-    }
 
-    renderChart("chart7d", {{ chart_7d | tojson }});
-    renderChart("chart30d", {{ chart_30d | tojson }});
+            const ctx = document.getElementById(canvasId).getContext("2d");
+            const labels = data.map(p => new Date(p.timestamp).toLocaleDateString());
+            const prices = data.map(p => p.price);
+
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Ціна (USD)",
+                        data: prices,
+                        borderColor: "rgba(0,123,255,1)",
+                        backgroundColor: "rgba(0,123,255,0.1)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: true },
+                        y: { display: true }
+                    }
+                }
+            });
+        }
+
+        renderChart("chart7d", {{ chart_7d | tojson }}, "fallback7d");
+        renderChart("chart30d", {{ chart_30d | tojson }}, "fallback30d");
+    });
 </script>
 </body>
 </html>
